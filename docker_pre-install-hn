@@ -1,0 +1,181 @@
+#!/bin/bash
+
+MODPROBE_FILE="/etc/sysconfig/modules/docker.modules"
+MODULE_LIST="veth"
+VZLIST="/usr/sbin/vzlist"
+VZCTL="/usr/sbin/vzctl"
+PLOOP_LAYOUT="5"
+VERSION=1
+
+# Cgroups
+CGROUP_MPOINT="/sys/fs/cgroup"
+CGROUP_BASE_OPTS="rw,nosuid,nodev,noexec,relatime"
+# List of sysfs cgroups mpoints, links and opts
+MPOINT[0]="$CGROUP_MPOINT/blkio"
+MOPT[0]="$CGROUP_BASE_OPTS,blkio,name=beancounter"
+MPOINT[1]="$CGROUP_MPOINT/memory"
+MOPT[1]="$CGROUP_BASE_OPTS,memory"
+MPOINT[2]="$CGROUP_MPOINT/cpu,cpuacct,cpuset"
+MOPT[2]="$CGROUP_BASE_OPTS,cpuacct,cpu,cpuset,name=fairsched"
+MPOINT[3]="$CGROUP_MPOINT/freezer,devices"
+MOPT[3]="$CGROUP_BASE_OPTS,freezer,devices,name=container"
+
+# systemd cgroups automount conf
+SYSTEMD_CONF="/etc/systemd/system.conf"
+SYSTEMD_CONFIG_PREFIX="JoinControllers"
+SYSTEMD_CONFIG_DATA="$SYSTEMD_CONFIG_PREFIX=cpu,cpuacct,cpuset freezer,devices"
+
+VEROOT=$1
+VEID=$2
+VZFS_STAT_TYPE="565a4653"
+
+function error_msg() {
+	echo $*
+	remount_cgroup_ro > /dev/null 2>&1
+	exit 1
+}
+
+function is_mounted() {
+	$VZCTL exec $VEID cat /proc/mounts | awk '{print $2}' | grep $1 > /dev/null 2>&1
+	return $?
+}
+
+function remount_cgroup_rw() {
+	$VZCTL exec $VEID mount -o remount,rw $CGROUP_MPOINT > /dev/null 2>&1
+	return $?
+}
+
+function remount_cgroup_ro() {
+	$VZCTL exec $VEID mount -o remount,ro $CGROUP_MPOINT > /dev/null 2>&1
+	return $?
+}
+
+function cgroups_mount() {
+	local item
+	local i=${#MPOINT[*]}
+	remount_cgroup_rw || error_msg "Failed to remount cgroup $CGROUP_MPOINT"
+	while [ $i -gt 0 ]; do
+		i=$((i-1))
+		is_mounted ${MPOINT[$i]} && continue
+		vzctl exec $VEID mkdir ${MPOINT[$i]}
+		$VZCTL exec $VEID mount -t cgroup cgroup ${MPOINT[$i]} -o ${MOPT[$i]} > /dev/null 2>&1
+		[ $? -ne 0 ] && error_msg "Failed to mount ${MPOINT[$i]}"
+		echo ${MPOINT[$i]} | grep ',' > /dev/null 2>&1
+		[ $? -ne 0 ] && continue
+		for item in `basename ${MPOINT[$i]} | sed "s,\,, ,g"`; do
+			$VZCTL exec $VEID "[ -e $CGROUP_MPOINT/$item ] && exit 0 || exit 1"
+			if [ $? -eq 0 ]; then
+				is_mounted $CGROUP_MPOINT/$item && \
+					$VZCTL exec $VEID umount $CGROUP_MPOINT/$item > /dev/null 2>&1
+				$VZCTL exec $VEID rm -rf $CGROUP_MPOINT/$item > /dev/null 2>&1
+			fi
+			$VZCTL exec $VEID ln -s `basename ${MPOINT[$i]}` $CGROUP_MPOINT/$item > /dev/null 2>&1
+			[ $? -ne 0 ] && error_msg "Failed to create $CGROUP_MPOINT/$item symlink"
+		done
+	done
+	remount_cgroup_ro > /dev/null 2>&1
+}
+
+function setup_modprobe() {
+	cat << EOF > $MODPROBE_FILE 2>/dev/null
+#!/bin/sh
+
+VERSION=$VERSION
+MODULE_LIST="$MODULE_LIST"
+
+for module in \$MODULE_LIST; do
+    modprobe -b \$module > /dev/null 2>&1
+done
+
+exit 0
+EOF
+
+	[ $? -ne 0 ] && error_msg "Failed to create $MODPROBE_FILE file"
+
+	chmod 0755 $MODPROBE_FILE > /dev/null 2>&1
+	[ $? -ne 0 ] && error_msg "Failed to make $MODPROBE_FILE executable"
+}
+
+function setup_fedora_cgroups() {
+	local conf=$VEROOT/$SYSTEMD_CONF
+	[ ! -f $conf ] && return
+
+	cat $conf | grep "^$SYSTEMD_CONFIG_PREFIX" > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		echo $SYSTEMD_CONFIG_DATA >> $conf
+		return
+	fi
+
+	sed -e "s/^$SYSTEMD_CONFIG_PREFIX.*/$SYSTEMD_CONFIG_DATA/g" -i $conf > /dev/null 2>&1
+	[ $? -ne 0 ] && error_msg "Failed to modify $conf"
+}
+
+function check_vzkernel_docker_support() {
+	local item
+	local cgroup
+	local i
+	local found
+	local cgroups=`$VZCTL exec $VEID cat /proc/cgroups | grep -v '^#' | awk '{print $1}'`
+
+	local i=${#MPOINT[*]}
+	while [ $i -gt 0 ]; do
+		i=$((i-1))
+		found=0
+		for item in `basename ${MPOINT[$i]} | sed "s,\,, ,g"`; do
+			for cgroup in $cgroups; do
+				if [ "$cgroup" == "$item" ]; then
+					found=1
+					break
+				fi
+			done
+			[ $found -eq 0 ] && error_msg "Unsupported vzkernel: " `uname -r` \
+				" please install vzkernel-2.6.32-042stab105.6 or later."
+		done
+	done
+}
+
+# 1. Check for vzkernel supports docker
+check_vzkernel_docker_support
+
+# 2. Check for Container is ploop
+if [ "x$APP_CACHE" != "x1" ]; then
+	$VZLIST -H -o layout $VEID | grep $PLOOP_LAYOUT > /dev/null 2>&1
+	[ $? -ne 0 ] && error_msg "Container is not in ploop layout"
+else
+	# For Golden Image: .ve.vzftype link is absent...
+	fs=`stat --printf="%t" -f $VEROOT 2>/dev/null`
+	[ "x$fs" = "x$VZFS_STAT_TYPE" ] && error_msg "Golden Image Container config is not in ploop layout"
+fi
+
+# 3. Check for needed features
+$VZLIST -H -o features $VEID 2>/dev/null | grep 'bridge:on' > /dev/null 2>&1
+[ $? -ne 0 ] && error_msg "Failed to install docker template: feature bridge should be on"
+
+$VZLIST -H -o netfilter $VEID 2>/dev/null | grep '^full' > /dev/null 2>&1
+[ $? -ne 0 ] && error_msg "Failed to install docker template: netfilter should be full"
+
+$VZLIST -H -o devnodes $VEID 2>/dev/null | grep 'net/tun:rw' > /dev/null 2>&1
+[ $? -ne 0 ] && error_msg "Failed to install docker template: net/tun device access should be full"
+
+# 4. Setup docker-required modules autoload
+if [ -x $MODPROBE_FILE ]; then
+	EXISTING_VERSION=`cat $MODPROBE_FILE | grep ^VERSION | sed "s,VERSION=,,g"`
+	[ -z $EXISTING_VERSION ] && EXISTING_VERSION=0
+	[ $EXISTING_VERSION -lt $VERSION ] && setup_modprobe
+else
+	setup_modprobe
+fi
+
+# 5. Load modules
+$MODPROBE_FILE
+[ $? -ne 0 ] && error_msg "Failed to load required modules"
+
+# 6. Setup Container
+
+# Set custom cgroups automount (if needed)
+setup_fedora_cgroups
+
+# Mount cgroups
+cgroups_mount
+
+exit 0
