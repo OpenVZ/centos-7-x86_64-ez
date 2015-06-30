@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,5 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Tue Jun 30 2015 Konstantin Volckov <wolf@sw.ru> 7.0.0-2
+- Set default target as multi-user target, see #PSBM-34228
+- Enable rpcbind.socket by default, see #PSBM-34604
+
 * Wed Jun 17 2015 Konstantin Volckov <wolf@sw.ru> 7.0.0-1
 - Initial release
