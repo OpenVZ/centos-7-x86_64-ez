@@ -46,6 +46,9 @@ for i in $list; do
 	/bin/systemctl disable $i.service > /dev/null 2>&1
 done
 
+# Enable rpcbind socket
+/bin/systemctl enable rpcbind.socket > /dev/null 2>&1
+
 # disable all cron jobs
 for i in hourly daily weekly monthly; do
 	chmod a-x /etc/cron.${i}/* > /dev/null 2>&1
