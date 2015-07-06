@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Mon Jul 06 2015 Konstantin Volckov <wolf@sw.ru> 7.0.0-3
+- Adopted docker template to Virtuozzo 7.0, see #PSBM-34625
+
 * Tue Jun 30 2015 Konstantin Volckov <wolf@sw.ru> 7.0.0-2
 - Set default target as multi-user target, see #PSBM-34228
 - Enable rpcbind.socket by default, see #PSBM-34604
