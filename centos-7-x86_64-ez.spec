@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Tue Jul 07 2015 Konstantin Volckov <wolf@sw.ru> 7.0.0-4
+- Removed checks for tty and random devnodes rw requires for docker
+
 * Mon Jul 06 2015 Konstantin Volckov <wolf@sw.ru> 7.0.0-3
 - Adopted docker template to Virtuozzo 7.0, see #PSBM-34625
 

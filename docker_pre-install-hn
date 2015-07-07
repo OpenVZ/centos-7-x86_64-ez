@@ -45,7 +45,7 @@ $VZLIST -H -o features $VEID 2>/dev/null | grep 'bridge:on' > /dev/null 2>&1
 $VZLIST -H -o netfilter $VEID 2>/dev/null | grep '^full' > /dev/null 2>&1
 [ $? -ne 0 ] && error_msg "Failed to install docker template: netfilter should be full"
 
-for devnode in "net/tun:rw" "tty0:rw" "tty1:rw" "random:rw"; do
+for devnode in "net/tun:rw"; do
 	$VZLIST -H -o devnodes $VEID 2>/dev/null | grep $devnode > /dev/null 2>&1
 	[ $? -ne 0 ] && error_msg "Failed to install docker template: ${devnode%:rw} device access should be full"
 done
