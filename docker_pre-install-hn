@@ -45,11 +45,6 @@ $VZLIST -H -o features $VEID 2>/dev/null | grep 'bridge:on' > /dev/null 2>&1
 $VZLIST -H -o netfilter $VEID 2>/dev/null | grep '^full' > /dev/null 2>&1
 [ $? -ne 0 ] && error_msg "Failed to install docker template: netfilter should be full"
 
-for devnode in "net/tun:rw"; do
-	$VZLIST -H -o devnodes $VEID 2>/dev/null | grep $devnode > /dev/null 2>&1
-	[ $? -ne 0 ] && error_msg "Failed to install docker template: ${devnode%:rw} device access should be full"
-done
-
 # 4. Setup docker-required modules autoload
 if [ -x $MODPROBE_FILE ]; then
 	EXISTING_VERSION=`cat $MODPROBE_FILE | grep ^VERSION | sed "s,VERSION=,,g"`
