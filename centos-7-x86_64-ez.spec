@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 5%{?dist}
+Release: 6%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Tue Dec  1 2015 Konstantin Volckov <wolf@sw.ru> 7.0.0-6
+- Fixed postgresql startup just after installation to Container, see #PSBM-41623
+
 * Tue Jul 14 2015 Konstantin Volckov <wolf@sw.ru> 7.0.0-5
 - Removed check for devnodes net/tun:rw, see #PSBM-34902
 
