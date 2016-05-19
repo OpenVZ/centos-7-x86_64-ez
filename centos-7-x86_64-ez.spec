@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 6%{?dist}
+Release: 7%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Thu May 19 2016 Alexander Stefanov-Khryukin <akhryukin@virtuozzo.com> 7.0.0-7
+- Explicitly create run/lock for mailman, see #PSBM-47198
+
 * Tue Dec  1 2015 Konstantin Volckov <wolf@sw.ru> 7.0.0-6
 - Fixed postgresql startup just after installation to Container, see #PSBM-41623
 
