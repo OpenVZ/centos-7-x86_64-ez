@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 9%{?dist}
+Release: 10%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Fri Jun 03 2016 Denis Silakov <dsilakov@virtuozzo.com> 7.0.0-10
+- Fix docker template (see #PSBM-47364)
+
 * Sat May 28 2016 Denis Silakov <dsilakov@virtuozzo.com> 7.0.0-9
 - More devel template adjustments (see #PSBM-47659)
 
