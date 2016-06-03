@@ -4,7 +4,7 @@ Group: Applications/System
 Vendor: Parallels
 License: GPL
 Version: 1.0
-Release: 2
+Release: 3
 Autoreq: 0
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
@@ -81,6 +81,11 @@ ln -s /usr/lib/systemd/system/vzreboot.service \
 for file in "/bin/ping" "/bin/ping6"; do
 	setcap cap_net_raw+ep $file > /dev/null 2>&1
 done
+:
+
+%triggerin -- postgresql-server
+mkdir -p /var/run/postgresql > /dev/null 2>&1
+chown postgres.postgres /var/run/postgresql > /dev/null 2>&1
 :
 
 %triggerin -- mariadb-server
