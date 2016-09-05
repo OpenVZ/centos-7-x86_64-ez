@@ -147,7 +147,7 @@ done
 %files -f files.lst
 
 %changelog
-* Mon Sep  5 2015 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-12
+* Mon Sep  5 2016 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-12
 - Corrected docker template according to VZ7 kernel, see #PSBM-50601
 
 * Fri Jun 03 2016 Denis Silakov <dsilakov@virtuozzo.com> 7.0.0-11
