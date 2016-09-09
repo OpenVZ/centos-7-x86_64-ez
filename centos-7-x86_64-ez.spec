@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 12%{?dist}
+Release: 13%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Fri Sep  9 2016 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-13
+- Drop postgresql and mariadb triggers: fixed in vzpkgenv, see #PSBM-50243
+
 * Mon Sep  5 2016 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-12
 - Corrected docker template according to VZ7 kernel, see #PSBM-50601
 
