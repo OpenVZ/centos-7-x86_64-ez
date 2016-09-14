@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 13%{?dist}
+Release: 14%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Wed Sep 14 2016 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-14
+- Disable iptables service by default, see #PSBM-52142
+
 * Fri Sep  9 2016 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-13
 - Drop postgresql and mariadb triggers: fixed in vzpkgenv, see #PSBM-50243
 
