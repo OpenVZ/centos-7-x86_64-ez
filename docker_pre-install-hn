@@ -12,10 +12,10 @@ function error_msg() {
 }
 
 # Check for needed features
-$VZLIST -H -o features -a $VEID 2>/dev/null | grep 'bridge:on' > /dev/null 2>&1
-[ $? -ne 0 ] && error_msg "Failed to install docker template: feature bridge should be on"
+$VZLIST -H -o features $VEID 2>/dev/null | grep 'bridge:off' > /dev/null 2>&1
+[ $? -eq 0 ] && error_msg "Failed to install docker template: feature bridge should be on"
 
-$VZLIST -H -o netfilter -a $VEID 2>/dev/null | grep '^full' > /dev/null 2>&1
+$VZLIST -H -o netfilter $VEID 2>/dev/null | grep '^full' > /dev/null 2>&1
 [ $? -ne 0 ] && error_msg "Failed to install docker template: netfilter should be full"
 
 exit 0
