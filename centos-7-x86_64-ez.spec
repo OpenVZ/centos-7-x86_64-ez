@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 15%{?dist}
+Release: 16%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Mon Oct 10 2016 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-16
+- Turn back iptables service, see #PSBM-53457
+
 * Thu Sep 29 2016 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-15
 - Check for beature bridge:off, see #PSBM-52739
 
