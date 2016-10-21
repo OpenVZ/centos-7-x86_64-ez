@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 16%{?dist}
+Release: 17%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,10 @@ done
 %files -f files.lst
 
 %changelog
+* Fri Oct 21 2016 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-17
+- Enable firewalld by default, open appropriate ports, see #PSBM-54055
+- Set default timezone for host, see #PSBM-54121
+
 * Mon Oct 10 2016 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-16
 - Turn back iptables service, see #PSBM-53457
 
