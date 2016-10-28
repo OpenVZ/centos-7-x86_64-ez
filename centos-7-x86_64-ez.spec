@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 18%{?dist}
+Release: 19%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Fri Oct 28 2016 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-19
+- Open tcp port for mod_ssl, see #PSBM-54473
+
 * Thu Oct 27 2016 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-18
 - Added hook for docker.service that resolves conflicts with firewalld.service, see #PSBM-54353
 
