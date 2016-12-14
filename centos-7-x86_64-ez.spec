@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 21%{?dist}
+Release: 22%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Wed Dec 14 2016 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-22
+- Set distribution to centos, see #PSBM-54824
+
 * Tue Dec 13 2016 Denis Silakov <dsilakov@virtuozzo.com> 7.0.0-21
 - Force firewalld to use individual calls to iptables/ebtables (#PSBM-57264)
 
