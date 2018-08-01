@@ -4,7 +4,7 @@ Group: Applications/System
 Vendor: Virtuozzo
 License: GPL
 Version: 1.0
-Release: 4
+Release: 5
 Autoreq: 0
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
@@ -32,10 +32,11 @@ cat >> $RPM_BUILD_ROOT/usr/lib/systemd/system/vzfifo.service << EOL
 Description=Tell that Container is started
 ConditionPathExists=/proc/vz
 ConditionPathExists=!/proc/bc
-After=multi-user.target quotaon.service quotacheck.service
+After=multi-user.target quotaon.service quotacheck.service firewalld.service
 
 [Service]
 Type=forking
+ExecStartPre=-/usr/bin/firewall-cmd --state
 ExecStart=/bin/touch /.vzfifo
 TimeoutSec=0
 RemainAfterExit=no
