@@ -45,7 +45,7 @@ for i in $list; do
 done
 
 # turn services off
-list="rpcbind avahi-daemon"
+list="rpcbind avahi-daemon systemd-sysctl systemd-vconsole-setup"
 for i in $list; do
 	/bin/systemctl disable $i.service > /dev/null 2>&1
 done
