@@ -147,7 +147,7 @@ done
 %files -f files.lst
 
 %changelog
-* Wed 12 12 2018 Alexa Stefanov <astefanov@virtuozzo.com> 7.0.0-24
+* Wed Dec 12 2018 Alexa Stefanov <astefanov@virtuozzo.com> 7.0.0-24
 - disable systemd-sysctl systemd-vconsole-setup, see PSBM-58992
 
 * Thu Jun 15 2017 Denis Silakov <dsilakov@virtuozzo.com> 7.0.0-23

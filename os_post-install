@@ -50,16 +50,6 @@ for i in $list; do
 	/bin/systemctl disable $i.service > /dev/null 2>&1
 done
 
-# mask unsuported sysctl variables
-sed -i -e "s/kernel.yama.ptrace_scope.*/# kernel.yama.ptrace_scope = 0/g" \
-	/usr/lib/sysctl.d/10-default-yama-scope.conf
-
-sed -i -e "s/fs.protected_hardlinks = 1/# fs.protected_hardlinks = 1/g" \
-	/usr/lib/sysctl.d/50-default.conf
-
-sed -i -e "s/fs.protected_symlinks = 1/# fs.protected_symlinks = 1/g" \
-	/usr/lib/sysctl.d/50-default.conf
-
 mask_list="systemd-vconsole-setup"
 for i in $mask_list; do
 	/bin/systemctl mask $i.service > /dev/null 2>&1
