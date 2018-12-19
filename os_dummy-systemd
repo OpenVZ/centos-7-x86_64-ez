@@ -4,7 +4,7 @@ Group: Applications/System
 Vendor: Virtuozzo
 License: GPL
 Version: 1.0
-Release: 5
+Release: 6
 Autoreq: 0
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
