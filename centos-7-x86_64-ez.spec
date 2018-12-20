@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 23%{?dist}
+Release: 24%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Wed Dec 12 2018 Alexa Stefanov <astefanov@virtuozzo.com> 7.0.0-24
+- disable systemd-sysctl systemd-vconsole-setup, see PSBM-58992
+
 * Thu Jun 15 2017 Denis Silakov <dsilakov@virtuozzo.com> 7.0.0-23
 - Enable extras repo, see #PSBM-67241
 

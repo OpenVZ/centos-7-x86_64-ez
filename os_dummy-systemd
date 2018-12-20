@@ -4,7 +4,7 @@ Group: Applications/System
 Vendor: Virtuozzo
 License: GPL
 Version: 1.0
-Release: 5
+Release: 6
 Autoreq: 0
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
@@ -84,6 +84,24 @@ for file in "/bin/ping" "/bin/ping6"; do
 done
 :
 
+%triggerin -- elfutils-default-yama-scope
+# mask unsuported sysctl variables
+YAMA_FILE="/usr/lib/sysctl.d/10-default-yama-scope.conf"
+if [ -f $YAMA_FILE ]; then
+sed -i -e "s/kernel.yama.ptrace_scope.*/# kernel.yama.ptrace_scope = 0/g" \
+        $YAMA_FILE
+fi
+
+%triggerin -- systemd
+# mask unsuported sysctl variables
+SYSTEMD_FILE="/usr/lib/sysctl.d/50-default.conf"
+if [ -f $SYSTEMD_FILE ]; then
+sed -i -e "s/fs.protected_hardlinks = 1/# fs.protected_hardlinks = 1/g" \
+	$SYSTEMD_FILE
+sed -i -e "s/fs.protected_symlinks = 1/# fs.protected_symlinks = 1/g" \
+	$SYSTEMD_FILE
+fi
+
 %files
 %attr(0644, root, root) /usr/lib/systemd/system/vzfifo.service
 %attr(0644, root, root) /usr/lib/systemd/system/vzreboot.service
@@ -93,6 +111,9 @@ done
 /lib/systemd/system/reboot.target.wants/vzreboot.service
 
 %changelog
+* Tue Dec 18 2018 Alexander Stefanov <astefanov@virtuozzo.com>
+- mask unsupported sysctl variables, see #PSBM-58992
+
 * Fri Jun 03 2016 Alexander Stefanov <astefanov@virtuozzo.com>
 - Create mariadb runtime directory on mariadb server installation, see #PSBM-47587
 
