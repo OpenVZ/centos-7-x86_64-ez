@@ -26,7 +26,7 @@ find %1 -type f -printf '%%%config %%%attr(%m,root,root) %p\\n' | sed "s,%buildr
 %define sources_lst() \
 %((cd %_sourcedir;\
 s=1;\
-for tmpl in %1; do\
+for tmpl in %*; do\
 sources=$tmpl"_*";\
 for file in $sources; do\
 echo Source$s: $file;\
@@ -37,7 +37,7 @@ done))\
 
 # Obsoletes list
 %define obsoletes_lst() \
-%((for tmpl in %1; do\
+%((for tmpl in %*; do\
 [ $tmpl = os ] && continue;\
 echo "Obsoletes: $tmpl-%templatename-%templatever-%templatearch-ez < 7.0.0";\
 echo "Provides: $tmpl-%templatename-%templatever-%templatearch-ez = %version-%release";\
@@ -51,8 +51,8 @@ Summary: %fullname %fulltemplatearch Template set
 Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
-Version: 7.0.0
-Release: 25%{?dist}
+Version: 8.0.0
+Release: 1%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Wed Dec  4 2019 Konstantin Volkov <wolf@virtuozzo.com> 8.0.0-1
+- First build for vz8, fixed sources package list, see #PSBM-99286
+
 * Wed Jan  9 2019 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-25
 - Use default non-limited apache settings, see #PSBM-87823
 
