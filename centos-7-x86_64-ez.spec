@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 25%{?dist}
+Release: 26%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Wed Apr 22 2020 Alex Stefanov <astefanov@virtuozzo.com> 7.0.0-26
+- enable cloud_init template, see #PSBM-103297
+
 * Wed Jan  9 2019 Konstantin Volkov <wolf@virtuozzo.com> 7.0.0-25
 - Use default non-limited apache settings, see #PSBM-87823
 
