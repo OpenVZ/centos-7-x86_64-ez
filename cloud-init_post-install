@@ -1,0 +1,11 @@
+#!/bin/bash
+
+CLOUD_CFG="/etc/cloud/cloud.cfg"
+
+if [[ -f "$CLOUD_CFG" ]]; then
+    sed -i '/.*- growpart/d' $CLOUD_CFG > /dev/null 2>&1
+    sed -i '/.*- mounts/d' $CLOUD_CFG > /dev/null 2>&1
+    sed -i '/.*- resizefs/d' $CLOUD_CFG > /dev/null 2>&1
+fi
+
+exit 0

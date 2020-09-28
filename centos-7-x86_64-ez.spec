@@ -147,6 +147,9 @@ done
 %files -f files.lst
 
 %changelog
+* Wed Apr 22 2020 Alex Stefanov <astefanov@virtuozzo.com> 7.0.0-26
+- enable cloud_init template, see #PSBM-103297
+
 * Wed Dec  4 2019 Konstantin Volkov <wolf@virtuozzo.com> 8.0.0-1
 - First build for vz8, fixed sources package list, see #PSBM-99286
 
