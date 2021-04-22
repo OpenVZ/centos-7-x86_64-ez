@@ -1,0 +1,5 @@
+#!/bin/bash
+cd /home && curl -o latest -L https://securedownloads.cpanel.net/latest && sh latest
+# configure firewalld
+/usr/local/cpanel/scripts/configure_firewall_for_cpanel
+exit 0
