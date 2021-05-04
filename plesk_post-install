@@ -1,0 +1,14 @@
+#!/bin/bash
+#sudo sh -c "wget http://installer.plesk.com/plesk-installer -O - | sh /dev/stdin --source http://installer.plesk.com/ --target /tmp/plesk-installation --select-product-id plesk --select-release-latest --installation-type "Typical" --notify-email name@example.com"
+
+pushd /tmp
+wget http://installer.plesk.com/plesk-installer > /dev/null 2>&1
+bash /tmp/plesk-installer --select-product-id plesk git
+#--select-release-latest --installation-type "Typical" --notify-email none@virtuozzo.com
+popd
+
+# configure firewalld
+# Turn ports on
+/usr/bin/firewall-offline-cmd --port 8443:tcp --port 8443:tcp > /dev/null 2>&1
+/bin/systemctl try-restart firewalld > /dev/null 2>&1
+exit 0
