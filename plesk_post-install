@@ -25,7 +25,8 @@ for EXTENSION in revisium-antivirus xovi advisor social-login domain-connect ; d
 	  /usr/local/psa/bin/extension --uninstall ${EXTENSION}
 done
 
-
+# parallels it is internal plesk naming
+# https://support.plesk.com/hc/en-us/articles/213905025-The-message-is-shown-in-Plesk-The-repair-operation-is-in-progress-You-will-be-redirected-to-the-login-page-when-it-completes
 rm -f	/tmp/pp-bootstrapper-mode.flag \
 	/tmp/pp-bootstrapper-ez-templates-prep-install.flag \
 	/tmp/pp-bootstrapper-ez-templates-post-install.sh \
