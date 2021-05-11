@@ -11,22 +11,11 @@ wget -q ${PLESK_URL}/${INSTALLER_BINARY} -O ${INSTALLER_FULL} || echo "PLESK INS
 
 chmod 700 ${INSTALLER_FULL}
 
-# get current stable release for Plesk Obsidian
+# get current stable release
 CURRENT_RELEASE="$(${INSTALLER_FULL} --show-releases 2>/dev/null | awk '/^plesk/{if(($2 ~ /PLESK_18/) && ($6 ~ /stable/)){print $2}}' | sort -n -k1,1 | tail -n 1)"
 
 # install plesk obsidian with latest stable release
 ${INSTALLER_FULL} install ${CURRENT_RELEASE:?} --preset Recommended --with pmm fail2ban git spamassassin psa-firewall phpgroup
-
-# backup adjustments
-# - deactivate backup by default
-# - full backup monthly
-# - incremental weekly
-# - random backup day
-# - 2 months of backups
-DAY_OF_WEEK=$(((RANDOM % 8) + 0))
-BACKUP_HOUR=$(((RANDOM % 24) + 0))
-#mysql -uadmin -p$(cat /etc/psa/.psa.shadow) psa -e "update BackupsScheduled set full_backup_period=2592000, active=\"false\", period=\"604800\", rotation=2, backup_day=${DAY_OF_WEEK}, backup_time=\"${BACKUP_HOUR}:00:00\";"
-#mysql -uadmin -p$(cat /etc/psa/.psa.shadow) psa -e "INSERT INTO `BackupsScheduled` VALUES (1,1,'server','local','2020-02-11 00:04:07',86400,'true','false',4,NULL,NULL,0,'false','true',0,'00:00:00','backup_content_all_at_domain',604800,1,NULL,0,NULL);"
 
 mysql -uadmin -p$(cat /etc/psa/.psa.shadow) psa -e "update misc set val=2 where param='bu_rotation';"
 mysql -uadmin -p$(cat /etc/psa/.psa.shadow) psa -e "update misc set val=3 where param='max_bu_proc_number';"
