@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 8.0.0
-Release: 28%{?dist}
+Release: 30%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -137,6 +137,9 @@ for tmpl in %templates_list; do
 	installfile $tmpl 0755 $dir pre-install-hn
 	installfile $tmpl 0755 $dir post-install
 	installfile $tmpl 0755 $dir post-install-hn
+	# pre-upgrade
+	installfile $tmpl 0755 $dir pre-update
+	installfile $tmpl 0755 $dir post-update
 
 	# Versioning
 	echo "%release" > $dir/release
@@ -147,7 +150,11 @@ done
 %files -f files.lst
 
 %changelog
-* Thu Apr 22 2020 Alex Stefanov <astefanov@virtuozzo.com> 7.0.0-27
+* Tue May 4 2021 Alex Stefanov <astefanov@virtuozzo.com> 7.0.0-28
+- add plesk, see #PSBM-128367
+- tune and adjust plesk scripts
+
+* Thu Apr 22 2021 Alex Stefanov <astefanov@virtuozzo.com> 7.0.0-27
 - add cpanel, see #PSBM-128366
 
 * Wed Apr 22 2020 Alex Stefanov <astefanov@virtuozzo.com> 7.0.0-26

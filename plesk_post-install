@@ -1,0 +1,82 @@
+#!/bin/bash
+# Some variables for plesk installation
+PLESK_URL="http://autoinstall.plesk.com"
+INSTALLER_BINARY="plesk-installer"
+INSTALLER_PATH="/root"
+INSTALLER_FULL="${INSTALLER_PATH}/${INSTALLER_BINARY}"
+
+# download current plesk_installer binary
+wget -q ${PLESK_URL}/${INSTALLER_BINARY} -O ${INSTALLER_FULL} || echo "PLESK INSTALLER DOWNLOAD FAILED - CHECK if ${PLESK_URL}/${INSTALLER_BINARY} exists!" | tee /root/INSTALL_FAILED.txt
+[[ -f /root/INSTALL_FAILED.txt ]] && exit 1
+
+chmod 700 ${INSTALLER_FULL}
+
+# get current stable release
+CURRENT_RELEASE="$(${INSTALLER_FULL} --show-releases 2>/dev/null | awk '/^plesk/{if(($2 ~ /PLESK_18/) && ($6 ~ /stable/)){print $2}}' | sort -n -k1,1 | tail -n 1)"
+
+# install plesk obsidian with latest stable release
+${INSTALLER_FULL} install ${CURRENT_RELEASE:?} --preset Recommended --with pmm fail2ban git spamassassin psa-firewall phpgroup
+
+mysql -uadmin -p$(cat /etc/psa/.psa.shadow) psa -e "update misc set val=2 where param='bu_rotation';"
+mysql -uadmin -p$(cat /etc/psa/.psa.shadow) psa -e "update misc set val=3 where param='max_bu_proc_number';"
+mysql -uadmin -p$(cat /etc/psa/.psa.shadow) psa -e "insert into misc values('bu_rotation', 2);"
+
+for EXTENSION in revisium-antivirus xovi advisor social-login domain-connect ; do
+	  /usr/local/psa/bin/extension --uninstall ${EXTENSION}
+done
+
+# parallels it is internal plesk naming
+# https://support.plesk.com/hc/en-us/articles/213905025-The-message-is-shown-in-Plesk-The-repair-operation-is-in-progress-You-will-be-redirected-to-the-login-page-when-it-completes
+rm -f	/tmp/pp-bootstrapper-mode.flag \
+	/tmp/pp-bootstrapper-ez-templates-prep-install.flag \
+	/tmp/pp-bootstrapper-ez-templates-post-install.sh \
+	/var/lock/parallels-panel-apply-microupdates.flag \
+	/var/lock/parallels-panel-maintenance-mode.flag
+
+plesk bin server_dns -u -recursion localhost
+
+/usr/local/psa/bin/server_pref -u -min_password_strength medium
+
+# Enable Reverse Proxy configuration (NGINX <=> apache2)
+/usr/local/psa/admin/sbin/nginxmng -e
+
+#pushd /tmp
+#wget http://installer.plesk.com/plesk-installer > /dev/null 2>&1
+#bash /tmp/plesk-installer --select-product-id plesk git > /dev/null 2>&1
+#popd
+
+# disable some external links
+cat >> /usr/local/psa/admin/conf/panel.ini << EOF
+[facebook]
+; Hide Like link
+showLikeLink = off
+
+[rating]
+; Hide feedback dialog with question to rate product
+enabled = off
+
+[extensions]
+blacklist = "kernelcare-plesk"
+autoBackup = off
+
+[twitter]
+showFollowLink = off
+
+[promos]
+enabled = off
+extensions.featured = off
+extensions.installed = off
+extensions.catalog = off
+
+[userActivityTracking]
+enabled = off
+EOF
+
+# configure firewalld
+# Turn ports on
+/usr/bin/firewall-offline-cmd --port 8443:tcp --port 8443:tcp > /dev/null 2>&1
+/bin/systemctl try-restart firewalld > /dev/null 2>&1
+exit 0
+
+#Clean-Up
+rm -rvf ${INSTALLER_FULL}
