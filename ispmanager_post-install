@@ -1,0 +1,13 @@
+#!/bin/bash
+
+pushd /tmp/
+wget http://download.ispsystem.com/install.sh
+# always pick release version and ispmanager product
+# Lite or Pro or Bussiness is optional
+bash /tmp/install.sh --release stable ISPmanager ISPmanager-Lite
+popd
+
+# configure firewalld
+# Turn ports on
+/usr/bin/firewall-offline-cmd --port 1500:tcp --port 1500:tcp > /dev/null 2>&1
+/bin/systemctl try-restart firewalld > /dev/null 2>&1
