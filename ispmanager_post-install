@@ -1,8 +1,0 @@
-#!/bin/bash
-
-pushd /tmp/
-wget http://download.ispsystem.com/install.sh
-# always pick release version and ispmanager product
-# Lite or Pro or Bussiness is optional
-bash /tmp/install.sh --release stable ISPmanager ISPmanager-Lite
-popd
