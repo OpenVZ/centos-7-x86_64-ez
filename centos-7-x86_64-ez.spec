@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 32%{?dist}
+Release: 33%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -150,6 +150,9 @@ done
 %files -f files.lst
 
 %changelog
+* Mon Jul 12 2021 Alex Stefanov <astefanov@virtuozzo.com> 7.0.0-33
+- add dovecot template
+
 * Tue May 11 2021 Alex Stefanov <astefanov@virtuozzo.com> 7.0.0-31
 - add ispmanager template
 
