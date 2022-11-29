@@ -52,7 +52,7 @@ Name: %templatename-%templatever-%templatearch-ez
 Group: Virtuozzo/Templates
 License: GPL
 Version: 7.0.0
-Release: 33%{?dist}
+Release: 34%{?dist}
 BuildRoot: %_tmppath/%name-root
 BuildArch: noarch
 Requires: %package_manager_pkg
@@ -115,6 +115,8 @@ for tmpl in %templates_list; do
 		installfile $tmpl 0755 $dir mid-post-install
 		installfile $tmpl 0755 $dir pre-upgrade
 		installfile $tmpl 0755 $dir post-upgrade
+		# needed only for vzdummy rpm
+		echo 'https://repo.virtuozzo.com/ctpreset/rpm/' >> $dir/repositories
 	else
 		# App templates only files
 
